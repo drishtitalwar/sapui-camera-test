@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
 
@@ -13,20 +13,33 @@
         id="sap-ui-bootstrap"
         src="https://ui5.sap.com/resources/sap-ui-core.js"
         data-sap-ui-theme="sap_horizon"
-        data-sap-ui-libs="sap.m"
-        data-sap-ui-compatVersion="edge"
-        data-sap-ui-async="false">
+        data-sap-ui-libs="sap.m">
     </script>
 
     <style>
         body {
-            margin: 0;
+            font-family: Arial, sans-serif;
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 25px;
         }
 
-        .testContainer {
-            padding: 20px;
-            max-width: 700px;
-            margin: auto;
+        h1 {
+            color: #0a6ed1;
+        }
+
+        .capture-button {
+            display: block;
+            width: 100%;
+            padding: 16px;
+            box-sizing: border-box;
+            background: #0a6ed1;
+            color: white;
+            text-align: center;
+            border-radius: 6px;
+            font-size: 18px;
+            cursor: pointer;
+            margin: 20px 0;
         }
 
         #cameraInput {
@@ -36,463 +49,205 @@
         #preview {
             display: none;
             width: 100%;
-            max-height: 400px;
+            max-height: 450px;
             object-fit: contain;
             margin-top: 20px;
-            border: 1px solid #ccc;
-            border-radius: 8px;
         }
 
-        #eventLog {
-            margin-top: 20px;
+        #status {
             padding: 12px;
+            background: #eef6fc;
+            margin-top: 15px;
+            border-radius: 5px;
+        }
+
+        #log {
             background: #f5f5f5;
-            border-radius: 6px;
+            padding: 12px;
+            margin-top: 20px;
+            white-space: pre-wrap;
             font-family: monospace;
             font-size: 12px;
-            white-space: pre-wrap;
-            word-break: break-word;
         }
     </style>
-
-    <script>
-
-        sap.ui.getCore().attachInit(function () {
-
-            var captureCount = 0;
-
-            var oStatus = new sap.m.MessageStrip({
-                text: "Ready for camera test",
-                type: "Information",
-                showIcon: true
-            });
-
-            var oFileInfo = new sap.m.Text({
-                text: "No image captured"
-            });
-
-
-            function log(message) {
-
-                var logArea =
-                    document.getElementById("eventLog");
-
-                var time =
-                    new Date().toLocaleTimeString();
-
-                logArea.textContent +=
-                    "[" + time + "] " +
-                    message + "\n";
-            }
-
-
-            function openCamera() {
-
-                log("Capture Image clicked");
-
-                oStatus.setText(
-                    "Opening Android camera..."
-                );
-
-                oStatus.setType(
-                    "Information"
-                );
-
-                document
-                    .getElementById("cameraInput")
-                    .click();
-            }
-
-
-            function resetTest() {
-
-                var input =
-                    document.getElementById("cameraInput");
-
-                var preview =
-                    document.getElementById("preview");
-
-                input.value = "";
-
-                preview.src = "";
-
-                preview.style.display =
-                    "none";
-
-                captureCount = 0;
-
-                oFileInfo.setText(
-                    "No image captured"
-                );
-
-                oStatus.setText(
-                    "Test reset. Ready."
-                );
-
-                oStatus.setType(
-                    "Information"
-                );
-
-                document.getElementById(
-                    "eventLog"
-                ).textContent = "";
-
-                log("Test reset");
-            }
-
-
-            var oContent =
-                new sap.m.VBox({
-
-                    width: "100%",
-
-                    items: [
-
-                        new sap.m.Title({
-
-                            text:
-                                "SAPUI5 Camera Test",
-
-                            level: "H2"
-
-                        }),
-
-
-                        new sap.m.Text({
-
-                            text:
-                                "Android Camera Capture / Browser Return Validation"
-
-                        }).addStyleClass(
-                            "sapUiSmallMarginBottom"
-                        ),
-
-
-                        new sap.m.MessageStrip({
-
-                            text:
-                                "Test flow: SAPUI5 → Camera → Capture → Return → Image Preview",
-
-                            type:
-                                "Information",
-
-                            showIcon:
-                                true
-
-                        }).addStyleClass(
-                            "sapUiSmallMarginBottom"
-                        ),
-
-
-                        new sap.m.Button({
-
-                            text:
-                                "Capture Image",
-
-                            icon:
-                                "sap-icon://camera",
-
-                            type:
-                                "Emphasized",
-
-                            width:
-                                "100%",
-
-                            press:
-                                openCamera
-
-                        }).addStyleClass(
-                            "sapUiSmallMarginBottom"
-                        ),
-
-
-                        oStatus
-                            .addStyleClass(
-                                "sapUiSmallMarginBottom"
-                            ),
-
-
-                        new sap.m.Label({
-
-                            text:
-                                "Captured Image Details"
-
-                        }),
-
-
-                        oFileInfo
-                            .addStyleClass(
-                                "sapUiSmallMarginBottom"
-                            ),
-
-
-                        new sap.ui.core.HTML({
-
-                            content:
-
-                                '<input ' +
-                                'id="cameraInput" ' +
-                                'type="file" ' +
-                                'accept="image/*" ' +
-                                'capture="environment">' +
-
-                                '<img ' +
-                                'id="preview" ' +
-                                'alt="Captured image preview">' +
-
-                                '<div id="eventLog">' +
-                                'Waiting for test...\n' +
-                                '</div>'
-
-                        }),
-
-
-                        new sap.m.Button({
-
-                            text:
-                                "Reset Test",
-
-                            icon:
-                                "sap-icon://refresh",
-
-                            width:
-                                "100%",
-
-                            press:
-                                resetTest
-
-                        }).addStyleClass(
-                            "sapUiMediumMarginTop"
-                        )
-
-                    ]
-
-                });
-
-
-            var oPage =
-                new sap.m.Page({
-
-                    title:
-                        "SAP Camera Validation",
-
-                    content: [
-
-                        new sap.m.VBox({
-
-                            items: [
-                                oContent
-                            ]
-
-                        }).addStyleClass(
-                            "testContainer"
-                        )
-
-                    ]
-
-                });
-
-
-            oPage.placeAt(
-                "content"
-            );
-
-
-            setTimeout(function () {
-
-                var input =
-                    document.getElementById(
-                        "cameraInput"
-                    );
-
-
-                input.addEventListener(
-                    "change",
-                    function (event) {
-
-                        log(
-                            "Returned from camera/file picker"
-                        );
-
-
-                        var file =
-                            event.target.files[0];
-
-
-                        if (!file) {
-
-                            log(
-                                "No image returned"
-                            );
-
-                            oStatus.setText(
-                                "Camera cancelled or no image selected."
-                            );
-
-                            oStatus.setType(
-                                "Warning"
-                            );
-
-                            return;
-                        }
-
-
-                        captureCount++;
-
-
-                        log(
-                            "Image received: " +
-                            file.name
-                        );
-
-
-                        log(
-                            "Image type: " +
-                            file.type
-                        );
-
-
-                        log(
-                            "Image size: " +
-                            Math.round(
-                                file.size / 1024
-                            ) +
-                            " KB"
-                        );
-
-
-                        oFileInfo.setText(
-
-                            "Capture #" +
-                            captureCount +
-
-                            " | " +
-
-                            file.name +
-
-                            " | " +
-
-                            Math.round(
-                                file.size / 1024
-                            ) +
-
-                            " KB | " +
-
-                            file.type
-
-                        );
-
-
-                        var reader =
-                            new FileReader();
-
-
-                        reader.onload =
-                            function (e) {
-
-                                var preview =
-                                    document
-                                        .getElementById(
-                                            "preview"
-                                        );
-
-
-                                preview.src =
-                                    e.target.result;
-
-
-                                preview.style.display =
-                                    "block";
-
-
-                                oStatus.setText(
-                                    "SUCCESS: Image returned to SAPUI5 page."
-                                );
-
-
-                                oStatus.setType(
-                                    "Success"
-                                );
-
-
-                                log(
-                                    "SUCCESS - Image loaded into SAPUI5 page"
-                                );
-
-                            };
-
-
-                        reader.onerror =
-                            function () {
-
-                                oStatus.setText(
-                                    "ERROR: Image could not be read."
-                                );
-
-
-                                oStatus.setType(
-                                    "Error"
-                                );
-
-
-                                log(
-                                    "ERROR - FileReader failed"
-                                );
-
-                            };
-
-
-                        reader.readAsDataURL(
-                            file
-                        );
-
-                    }
-                );
-
-
-                window.addEventListener(
-                    "focus",
-                    function () {
-
-                        log(
-                            "Browser window received focus"
-                        );
-
-                    }
-                );
-
-
-                document.addEventListener(
-                    "visibilitychange",
-                    function () {
-
-                        log(
-                            "Visibility changed: " +
-                            document.visibilityState
-                        );
-
-                    }
-                );
-
-
-                log(
-                    "SAPUI5 camera test initialized"
-                );
-
-
-            }, 500);
-
-        });
-
-    </script>
-
 </head>
 
+<body>
 
-<body class="sapUiBody">
+<h1>SAPUI5 Camera Test</h1>
 
-    <div id="content"></div>
+<p>
+    Android Camera Capture / Browser Return Validation
+</p>
+
+<p>
+    Flow:
+    SAPUI5 Web Page → Camera → Capture → Return → Preview
+</p>
+
+
+<label class="capture-button"
+       for="cameraInput">
+    📷 Capture Image
+</label>
+
+<input
+    id="cameraInput"
+    type="file"
+    accept="image/*"
+    capture="environment">
+
+
+<div id="status">
+    Ready for camera test
+</div>
+
+
+<img id="preview"
+     alt="Captured image preview">
+
+
+<div id="log">
+Test initialized.
+</div>
+
+
+<script>
+
+const input =
+    document.getElementById("cameraInput");
+
+const preview =
+    document.getElementById("preview");
+
+const status =
+    document.getElementById("status");
+
+const log =
+    document.getElementById("log");
+
+
+function writeLog(message) {
+
+    const time =
+        new Date().toLocaleTimeString();
+
+    log.textContent +=
+        "\n[" + time + "] " + message;
+}
+
+
+input.addEventListener(
+    "change",
+    function(event) {
+
+        writeLog(
+            "Returned from camera/file picker"
+        );
+
+
+        const file =
+            event.target.files[0];
+
+
+        if (!file) {
+
+            status.textContent =
+                "Camera cancelled / no image returned.";
+
+            writeLog(
+                "No image returned"
+            );
+
+            return;
+        }
+
+
+        writeLog(
+            "Image received: " +
+            file.name
+        );
+
+
+        writeLog(
+            "Type: " +
+            file.type
+        );
+
+
+        writeLog(
+            "Size: " +
+            Math.round(file.size / 1024) +
+            " KB"
+        );
+
+
+        const reader =
+            new FileReader();
+
+
+        reader.onload =
+            function(e) {
+
+                preview.src =
+                    e.target.result;
+
+                preview.style.display =
+                    "block";
+
+                status.textContent =
+                    "SUCCESS: Image returned to webpage.";
+
+                writeLog(
+                    "SUCCESS - image displayed after camera return"
+                );
+
+            };
+
+
+        reader.onerror =
+            function() {
+
+                status.textContent =
+                    "ERROR: Unable to read captured image.";
+
+                writeLog(
+                    "ERROR reading image"
+                );
+
+            };
+
+
+        reader.readAsDataURL(
+            file
+        );
+
+    });
+
+
+document.addEventListener(
+    "visibilitychange",
+    function() {
+
+        writeLog(
+            "Visibility: " +
+            document.visibilityState
+        );
+
+    });
+
+
+window.addEventListener(
+    "focus",
+    function() {
+
+        writeLog(
+            "Browser received focus"
+        );
+
+    });
+
+</script>
 
 </body>
-
 </html>
