@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>SAPUI5 Camera Test</title>
+
+    <!-- SAPUI5 -->
+    <script
+        id="sap-ui-bootstrap"
+        src="https://ui5.sap.com/resources/sap-ui-core.js"
+        data-sap-ui-theme="sap_horizon"
+        data-sap-ui-libs="sap.m"
+        data-sap-ui-compatVersion="edge"
+        data-sap-ui-async="false">
+    </script>
+
+    <style>
+        body {
+            margin: 0;
+        }
+
+        .testContainer {
+            padding: 20px;
+            max-width: 700px;
+            margin: auto;
+        }
+
+        #cameraInput {
+            display: none;
+        }
+
+        #preview {
+            display: none;
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            margin-top: 20px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+        }
+
+        #eventLog {
+            margin-top: 20px;
+            padding: 12px;
+            background: #f5f5f5;
+            border-radius: 6px;
+            font-family: monospace;
+            font-size: 12px;
+            white-space: pre-wrap;
+            word-break: break-word;
+        }
+    </style>
+
+    <script>
+
+        sap.ui.getCore().attachInit(function () {
+
+            var captureCount = 0;
+
+            var oStatus = new sap.m.MessageStrip({
+                text: "Ready for camera test",
+                type: "Information",
+                showIcon: true
+            });
+
+            var oFileInfo = new sap.m.Text({
+                text: "No image captured"
+            });
+
+
+            function log(message) {
+
+                var logArea =
+                    document.getElementById("eventLog");
+
+                var time =
+                    new Date().toLocaleTimeString();
+
+                logArea.textContent +=
+                    "[" + time + "] " +
+                    message + "\n";
+            }
+
+
+            function openCamera() {
+
+                log("Capture Image clicked");
+
+                oStatus.setText(
+                    "Opening Android camera..."
+                );
+
+                oStatus.setType(
+                    "Information"
+                );
+
+                document
+                    .getElementById("cameraInput")
+                    .click();
+            }
+
+
+            function resetTest() {
+
+                var input =
+                    document.getElementById("cameraInput");
+
+                var preview =
+                    document.getElementById("preview");
+
+                input.value = "";
+
+                preview.src = "";
+
+                preview.style.display =
+                    "none";
+
+                captureCount = 0;
+
+                oFileInfo.setText(
+                    "No image captured"
+                );
+
+                oStatus.setText(
+                    "Test reset. Ready."
+                );
+
+                oStatus.setType(
+                    "Information"
+                );
+
+                document.getElementById(
+                    "eventLog"
+                ).textContent = "";
+
+                log("Test reset");
+            }
+
+
+            var oContent =
+                new sap.m.VBox({
+
+                    width: "100%",
+
+                    items: [
+
+                        new sap.m.Title({
+
+                            text:
+                                "SAPUI5 Camera Test",
+
+                            level: "H2"
+
+                        }),
+
+
+                        new sap.m.Text({
+
+                            text:
+                                "Android Camera Capture / Browser Return Validation"
+
+                        }).addStyleClass(
+                            "sapUiSmallMarginBottom"
+                        ),
+
+
+                        new sap.m.MessageStrip({
+
+                            text:
+                                "Test flow: SAPUI5 → Camera → Capture → Return → Image Preview",
+
+                            type:
+                                "Information",
+
+                            showIcon:
+                                true
+
+                        }).addStyleClass(
+                            "sapUiSmallMarginBottom"
+                        ),
+
+
+                        new sap.m.Button({
+
+                            text:
+                                "Capture Image",
+
+                            icon:
+                                "sap-icon://camera",
+
+                            type:
+                                "Emphasized",
+
+                            width:
+                                "100%",
+
+                            press:
+                                openCamera
+
+                        }).addStyleClass(
+                            "sapUiSmallMarginBottom"
+                        ),
+
+
+                        oStatus
+                            .addStyleClass(
+                                "sapUiSmallMarginBottom"
+                            ),
+
+
+                        new sap.m.Label({
+
+                            text:
+                                "Captured Image Details"
+
+                        }),
+
+
+                        oFileInfo
+                            .addStyleClass(
+                                "sapUiSmallMarginBottom"
+                            ),
+
+
+                        new sap.ui.core.HTML({
+
+                            content:
+
+                                '<input ' +
+                                'id="cameraInput" ' +
+                                'type="file" ' +
+                                'accept="image/*" ' +
+                                'capture="environment">' +
+
+                                '<img ' +
+                                'id="preview" ' +
+                                'alt="Captured image preview">' +
+
+                                '<div id="eventLog">' +
+                                'Waiting for test...\n' +
+                                '</div>'
+
+                        }),
+
+
+                        new sap.m.Button({
+
+                            text:
+                                "Reset Test",
+
+                            icon:
+                                "sap-icon://refresh",
+
+                            width:
+                                "100%",
+
+                            press:
+                                resetTest
+
+                        }).addStyleClass(
+                            "sapUiMediumMarginTop"
+                        )
+
+                    ]
+
+                });
+
+
+            var oPage =
+                new sap.m.Page({
+
+                    title:
+                        "SAP Camera Validation",
+
+                    content: [
+
+                        new sap.m.VBox({
+
+                            items: [
+                                oContent
+                            ]
+
+                        }).addStyleClass(
+                            "testContainer"
+                        )
+
+                    ]
+
+                });
+
+
+            oPage.placeAt(
+                "content"
+            );
+
+
+            setTimeout(function () {
+
+                var input =
+                    document.getElementById(
+                        "cameraInput"
+                    );
+
+
+                input.addEventListener(
+                    "change",
+                    function (event) {
+
+                        log(
+                            "Returned from camera/file picker"
+                        );
+
+
+                        var file =
+                            event.target.files[0];
+
+
+                        if (!file) {
+
+                            log(
+                                "No image returned"
+                            );
+
+                            oStatus.setText(
+                                "Camera cancelled or no image selected."
+                            );
+
+                            oStatus.setType(
+                                "Warning"
+                            );
+
+                            return;
+                        }
+
+
+                        captureCount++;
+
+
+                        log(
+                            "Image received: " +
+                            file.name
+                        );
+
+
+                        log(
+                            "Image type: " +
+                            file.type
+                        );
+
+
+                        log(
+                            "Image size: " +
+                            Math.round(
+                                file.size / 1024
+                            ) +
+                            " KB"
+                        );
+
+
+                        oFileInfo.setText(
+
+                            "Capture #" +
+                            captureCount +
+
+                            " | " +
+
+                            file.name +
+
+                            " | " +
+
+                            Math.round(
+                                file.size / 1024
+                            ) +
+
+                            " KB | " +
+
+                            file.type
+
+                        );
+
+
+                        var reader =
+                            new FileReader();
+
+
+                        reader.onload =
+                            function (e) {
+
+                                var preview =
+                                    document
+                                        .getElementById(
+                                            "preview"
+                                        );
+
+
+                                preview.src =
+                                    e.target.result;
+
+
+                                preview.style.display =
+                                    "block";
+
+
+                                oStatus.setText(
+                                    "SUCCESS: Image returned to SAPUI5 page."
+                                );
+
+
+                                oStatus.setType(
+                                    "Success"
+                                );
+
+
+                                log(
+                                    "SUCCESS - Image loaded into SAPUI5 page"
+                                );
+
+                            };
+
+
+                        reader.onerror =
+                            function () {
+
+                                oStatus.setText(
+                                    "ERROR: Image could not be read."
+                                );
+
+
+                                oStatus.setType(
+                                    "Error"
+                                );
+
+
+                                log(
+                                    "ERROR - FileReader failed"
+                                );
+
+                            };
+
+
+                        reader.readAsDataURL(
+                            file
+                        );
+
+                    }
+                );
+
+
+                window.addEventListener(
+                    "focus",
+                    function () {
+
+                        log(
+                            "Browser window received focus"
+                        );
+
+                    }
+                );
+
+
+                document.addEventListener(
+                    "visibilitychange",
+                    function () {
+
+                        log(
+                            "Visibility changed: " +
+                            document.visibilityState
+                        );
+
+                    }
+                );
+
+
+                log(
+                    "SAPUI5 camera test initialized"
+                );
+
+
+            }, 500);
+
+        });
+
+    </script>
+
+</head>
+
+
+<body class="sapUiBody">
+
+    <div id="content"></div>
+
+</body>
+
+</html>
